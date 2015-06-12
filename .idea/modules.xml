@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/PopeyeText.iml" filepath="$PROJECT_DIR$/PopeyeText.iml" />
+      <module fileurl="file://$PROJECT_DIR$/popeyetext/popeyetext.iml" filepath="$PROJECT_DIR$/popeyetext/popeyetext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/popeyetext-samples/popeyetext-samples.iml" filepath="$PROJECT_DIR$/popeyetext-samples/popeyetext-samples.iml" />
+    </modules>
+  </component>
+</project>
