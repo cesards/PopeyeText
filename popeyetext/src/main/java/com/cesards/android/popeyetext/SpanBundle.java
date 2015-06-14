@@ -7,31 +7,40 @@ import com.cesards.android.popeyetext.span.Span;
  */
 public class SpanBundle {
 
-    private int start = 0;
-    private int end = 0;
-    private int flags;
-    private Span span;
+    private final Span span;
+    private boolean repeatSearch = false;
+    private String pattern;
+    private String spannedText;
 
-    public SpanBundle(int start, int end, int flags, Span span) {
-        this.start = start;
-        this.end = end;
-        this.flags = flags;
+    public SpanBundle(Span span) {
         this.span = span;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getFlags() {
-        return flags;
     }
 
     public Span getSpan() {
         return span;
+    }
+
+    public boolean isRepeatSearch() {
+        return repeatSearch;
+    }
+
+    public void setRepeatSearch(boolean repeatSearch) {
+        this.repeatSearch = repeatSearch;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public String getSpannedText() {
+        return spannedText;
+    }
+
+    public void setSpannedText(String spannedText) {
+        this.spannedText = spannedText;
     }
 }

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
+import android.widget.TextView;
 import com.cesards.android.popeyetext.span.Span;
 import java.util.ArrayList;
+import org.w3c.dom.Text;
 
 /**
  * Created by cesards on 12/06/15.
@@ -24,12 +27,12 @@ public class TextComposer {
 
     public static class Builder {
 
-        private Context context;
+        private TextView textView;
         private StringBuilder stringBuilder = new StringBuilder();
         private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
 
-        public Builder(Context context) {
-            this.context = context;
+        public Builder(TextView textView) {
+            this.textView = textView;
         }
 
         public Builder intro() {
@@ -38,7 +41,7 @@ public class TextComposer {
         }
 
         public Builder text(@StringRes int res) {
-            final String text = context.getString(res);
+            final String text = textView.getContext().getString(res);
             return text(text);
         }
 
@@ -47,23 +50,39 @@ public class TextComposer {
             return this;
         }
 
-
-
-
-        public Builder span(Span span, String text) {
-            spanBundles.add(new SpanBundle(start, end, Span.DEFAULT_RENDER_APPLY_MODE, span));
+        public Builder span(Span span, String textToSpan) {
+            final SpanBundle spanBundle = new SpanBundle(span);
+            spanBundle.setSpannedText(textToSpan);
+            spanBundles.add(spanBundle);
             return this;
         }
 
-        public Builderspan(Span span, String text, boolean repeat) {
+
+        COMPOSITION OVER INHERITANCE
+
+
+
+
+
+
+
+
+        public Builderspan(Span span, String textToSpan, boolean firstMatch) {
 
         }
 
         public Builder span(Span span, String pattern) {
-            return span(span, start, end, Span.DEFAULT_RENDER_APPLY_MODE);
+            return span(span, start, end, );
         }
 
         public TextComposer build() {
+
+
+
+            text.setSpan(new TextAppearanceSpan(getContext(), R.style.myStyle), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            text.setSpan(new TextAppearanceSpan(getContext(), R.style.myNextStyle), 6, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
 
             final String s = stringBuilder.toString();
 
@@ -72,7 +91,7 @@ public class TextComposer {
             for (int i = spanBundles.size() - 1; i >= 0; i--) {
                 final SpanBundle spanBundle = spanBundles.get(i);
                 spannableString.setSpan(spanBundle.getSpan(), spanBundle.getStart(), spanBundle.getEnd(),
-                        spanBundle.getFlags());
+                        Span.DEFAULT_RENDER_APPLY_MODE);
             }
 
             return new TextComposer(spannableString);
