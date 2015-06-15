@@ -1,4 +1,4 @@
-package com.cesards.android.popeyetext;
+package com.cesards.android.popeyetext.span;
 
 import android.text.style.BackgroundColorSpan;
 import com.cesards.android.popeyetext.span.Span;
