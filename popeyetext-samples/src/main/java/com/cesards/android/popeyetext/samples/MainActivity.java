@@ -2,7 +2,6 @@ package com.cesards.android.popeyetext.samples;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.cesards.android.popeyetext.R;
 
 public class MainActivity extends AppCompatActivity {
 

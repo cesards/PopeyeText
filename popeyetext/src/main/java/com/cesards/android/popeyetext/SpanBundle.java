@@ -11,14 +11,14 @@ public class SpanBundle {
     private boolean repeatSearch = false;
     private String pattern;
     private String spannedText;
-    private int textIndex = 0;
+    private int textId = 0;
 
-    public int getTextIndex() {
-        return textIndex;
+    public int getTextId() {
+        return textId;
     }
 
-    public void setTextIndex(int textIndex) {
-        this.textIndex = textIndex;
+    public void setTextId(int textId) {
+        this.textId = textId;
     }
 
     public SpanBundle(Span span) {

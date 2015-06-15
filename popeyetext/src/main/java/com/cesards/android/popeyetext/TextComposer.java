@@ -4,7 +4,9 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.SparseArray;
 import android.widget.TextView;
+import com.cesards.android.popeyetext.exception.TextComposerException;
 import com.cesards.android.popeyetext.span.Span;
 import java.util.ArrayList;
 
@@ -23,44 +25,34 @@ public class TextComposer {
         return spannable;
     }
 
-    public static class SpanBuilder {
-
-        private final Builder builder;
-
-        public SpanBuilder(Builder builder) {
-            this.builder = builder;
-        }
-
-        private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
-
-        public Builder span(Span span) {
-            final SpanBundle spanBundle = new SpanBundle(span);
-            spanBundle.setTextIndex(builder.texts.size() - 1);
-            spanBundles.add(spanBundle);
-            return builder;
-        }
-    }
-
     public static class Builder {
 
-        private TextView textView;
+        private TextView[] textViews;
         private Context context;
         private ArrayList<String> texts = new ArrayList<>();
-        private SpanBuilder spanBuilder;
+        private ArrayList<String> patterns = new ArrayList<>();
+        private SparseArray<String> ids = new SparseArray<>();
+        private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
 
-        public Builder(TextView textView) {
-            this.textView = textView;
-            context = textView.getContext();
-            spanBuilder = new SpanBuilder(this);
+        public Builder(TextView... textViews) {
+            this.textViews = textViews;
+            if (textViews.length == 0) {
+                throw new TextComposerException();
+            }
+            this.context = textViews[0].getContext();
         }
 
         public Builder(Context context) {
             this.context = context;
-            spanBuilder = new SpanBuilder(this);
         }
 
         public Builder intro() {
             texts.add("\n");
+            return this;
+        }
+
+        public Builder space() {
+            texts.add(" ");
             return this;
         }
 
@@ -71,7 +63,7 @@ public class TextComposer {
 
         public Builder text(@StringRes int textRes, int textId) {
             final String text = context.getString(textRes);
-            return text(text);
+            return text(text, textId);
         }
 
         public Builder text(String text) {
@@ -81,35 +73,31 @@ public class TextComposer {
 
         public Builder text(String text, int textId) {
             texts.add(text);
+            ids.put(textId, text);
             return this;
         }
 
-        public SpanBuilder spanText(@StringRes int res) {
-            final String text = context.getString(res);
-            texts.add(text);
-            return spanBuilder;
+        public Builder span(Span span, int textId) {
+            final SpanBundle spanBundle = new SpanBundle(span);
+            spanBundle.setTextId(textId);
+            spanBundles.add(spanBundle);
+            return this;
         }
 
-        public SpanBuilder spanText(String text) {
-            texts.add(text);
-            return spanBuilder;
+        public Builder span(Span span, String pattern) {
+            final SpanBundle spanBundle = new SpanBundle(span);
+            spanBundle.setPattern(pattern);
+            spanBundles.add(spanBundle);
+            return this;
         }
 
-
-
-
-        public SpanBuilder spanPattern(String pattern) {
-            return spanBuilder;
+        public Builder span(Span span, String pattern, boolean firstMatch) {
+            final SpanBundle spanBundle = new SpanBundle(span);
+            spanBundle.setPattern(pattern);
+            spanBundle.setRepeatSearch(!firstMatch);
+            spanBundles.add(spanBundle);
+            return this;
         }
-
-        public SpanBuilder spanPattern(String pattern, boolean firstMatch) {
-            return spanBuilder;
-        }
-
-
-
-
-
 
         public TextComposer compose() {
             final StringBuilder stringBuilder = new StringBuilder();
@@ -118,22 +106,20 @@ public class TextComposer {
                 stringBuilder.append(text);
             }
 
-
             final SpannableString spannableString = new SpannableString(stringBuilder);
-            //            final SpannableString spannableString = new SpannableString(stringBuilder.toString());
+            for (int i = spanBundles.size() - 1; i >= 0; i--) {
+                final SpanBundle spanBundle = spanBundles.get(i);
 
-            for (int i = spanBuilder.spanBundles.size() - 1; i >= 0; i--) {
-                final SpanBundle spanBundle = spanBuilder.spanBundles.get(i);
+                final String s = ids.get(spanBundle.getTextId());
+                final int i1 = stringBuilder.indexOf(s);
 
-                final String s = stringBuilder.toString();
-                final String spannedText = texts.get(spanBundle.getTextIndex());
-                final int i1 = s.indexOf(spannedText);
-
-//                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText.length(), Span.DEFAULT_RENDER_APPLY_MODE);
-                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText.length(), 0);
+                //                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText
+                // .length(), Span.DEFAULT_RENDER_APPLY_MODE);
+                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + s.length(),
+                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
 
-            if (textView != null) {
+            for (TextView textView : textViews) {
                 textView.setText(spannableString, TextView.BufferType.SPANNABLE);
             }
 
