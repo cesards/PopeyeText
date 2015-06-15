@@ -11,6 +11,15 @@ public class SpanBundle {
     private boolean repeatSearch = false;
     private String pattern;
     private String spannedText;
+    private int textIndex = 0;
+
+    public int getTextIndex() {
+        return textIndex;
+    }
+
+    public void setTextIndex(int textIndex) {
+        this.textIndex = textIndex;
+    }
 
     public SpanBundle(Span span) {
         this.span = span;

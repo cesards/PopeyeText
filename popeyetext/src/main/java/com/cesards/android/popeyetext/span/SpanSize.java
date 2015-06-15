@@ -12,8 +12,14 @@ public class SpanSize extends Span {
 
     // span.setSpan(new RelativeSizeSpan(2.0f), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+    private final float proportion;
+
+    public SpanSize(float proportion) {
+        this.proportion = proportion;
+    }
+
     @Override
-    public Object getSpanType(Object object) {
-        return new RelativeSizeSpan();
+    public Object getSpanType() {
+        return new RelativeSizeSpan(proportion);
     }
 }

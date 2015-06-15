@@ -4,11 +4,9 @@ import android.content.Context;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.TextAppearanceSpan;
 import android.widget.TextView;
 import com.cesards.android.popeyetext.span.Span;
 import java.util.ArrayList;
-import org.w3c.dom.Text;
 
 /**
  * Created by cesards on 12/06/15.
@@ -25,76 +23,123 @@ public class TextComposer {
         return spannable;
     }
 
+    public static class SpanBuilder {
+
+        private final Builder builder;
+
+        public SpanBuilder(Builder builder) {
+            this.builder = builder;
+        }
+
+        private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
+
+        public Builder span(Span span) {
+            final SpanBundle spanBundle = new SpanBundle(span);
+            spanBundle.setTextIndex(builder.texts.size() - 1);
+            spanBundles.add(spanBundle);
+            return builder;
+        }
+    }
+
     public static class Builder {
 
         private TextView textView;
-        private StringBuilder stringBuilder = new StringBuilder();
-        private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
+        private Context context;
+        private ArrayList<String> texts = new ArrayList<>();
+        private SpanBuilder spanBuilder;
 
         public Builder(TextView textView) {
             this.textView = textView;
+            context = textView.getContext();
+            spanBuilder = new SpanBuilder(this);
+        }
+
+        public Builder(Context context) {
+            this.context = context;
+            spanBuilder = new SpanBuilder(this);
         }
 
         public Builder intro() {
-            stringBuilder.append("\n");
+            texts.add("\n");
             return this;
         }
 
-        public Builder text(@StringRes int res) {
-            final String text = textView.getContext().getString(res);
+        public Builder text(@StringRes int textRes) {
+            final String text = context.getString(textRes);
+            return text(text);
+        }
+
+        public Builder text(@StringRes int textRes, int textId) {
+            final String text = context.getString(textRes);
             return text(text);
         }
 
         public Builder text(String text) {
-            stringBuilder.append(text);
+            texts.add(text);
             return this;
         }
 
-        public Builder span(Span span, String textToSpan) {
-            final SpanBundle spanBundle = new SpanBundle(span);
-            spanBundle.setSpannedText(textToSpan);
-            spanBundles.add(spanBundle);
+        public Builder text(String text, int textId) {
+            texts.add(text);
             return this;
         }
 
-
-        COMPOSITION OVER INHERITANCE
-
-
-
-
-
-
-
-
-        public Builderspan(Span span, String textToSpan, boolean firstMatch) {
-
+        public SpanBuilder spanText(@StringRes int res) {
+            final String text = context.getString(res);
+            texts.add(text);
+            return spanBuilder;
         }
 
-        public Builder span(Span span, String pattern) {
-            return span(span, start, end, );
+        public SpanBuilder spanText(String text) {
+            texts.add(text);
+            return spanBuilder;
         }
 
-        public TextComposer build() {
 
 
 
-            text.setSpan(new TextAppearanceSpan(getContext(), R.style.myStyle), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            text.setSpan(new TextAppearanceSpan(getContext(), R.style.myNextStyle), 6, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        public SpanBuilder spanPattern(String pattern) {
+            return spanBuilder;
+        }
+
+        public SpanBuilder spanPattern(String pattern, boolean firstMatch) {
+            return spanBuilder;
+        }
 
 
 
-            final String s = stringBuilder.toString();
 
-            final SpannableString spannableString = new SpannableString(s);
 
-            for (int i = spanBundles.size() - 1; i >= 0; i--) {
-                final SpanBundle spanBundle = spanBundles.get(i);
-                spannableString.setSpan(spanBundle.getSpan(), spanBundle.getStart(), spanBundle.getEnd(),
-                        Span.DEFAULT_RENDER_APPLY_MODE);
+
+        public TextComposer compose() {
+            final StringBuilder stringBuilder = new StringBuilder();
+
+            for (String text : texts) {
+                stringBuilder.append(text);
+            }
+
+
+            final SpannableString spannableString = new SpannableString(stringBuilder);
+            //            final SpannableString spannableString = new SpannableString(stringBuilder.toString());
+
+            for (int i = spanBuilder.spanBundles.size() - 1; i >= 0; i--) {
+                final SpanBundle spanBundle = spanBuilder.spanBundles.get(i);
+
+                final String s = stringBuilder.toString();
+                final String spannedText = texts.get(spanBundle.getTextIndex());
+                final int i1 = s.indexOf(spannedText);
+
+//                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText.length(), Span.DEFAULT_RENDER_APPLY_MODE);
+                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText.length(), 0);
+            }
+
+            if (textView != null) {
+                textView.setText(spannableString, TextView.BufferType.SPANNABLE);
             }
 
             return new TextComposer(spannableString);
         }
     }
 }
+
+
