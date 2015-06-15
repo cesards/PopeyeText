@@ -1,22 +1,40 @@
 apply plugin: 'com.android.application'
+apply plugin: 'hugo'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.jakewharton.hugo:hugo-plugin:1.2.0'
+    }
+}
 
 android {
     compileSdkVersion 22
     buildToolsVersion "23.0.0 rc2"
 
     defaultConfig {
-        applicationId "com.cesards.android.popeyetext"
+        applicationId "com.cesards.android.popeyetext.samples"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {}
 }
 
 dependencies {
