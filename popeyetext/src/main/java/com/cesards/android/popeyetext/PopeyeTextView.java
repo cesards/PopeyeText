@@ -4,7 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.text.Spannable;
+import android.text.Spanned;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -30,12 +30,11 @@ public class PopeyeTextView extends TextView {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setSpannable(Spannable spannable) {
-        setText(spannable, BufferType.SPANNABLE);
+    public void setSpannable(Spanned spanned) {
+        setText(spanned, BufferType.SPANNABLE);
     }
 
     public void setText(@NonNull TextComposer textComposer) {
-        setSpannable(textComposer.getSpannable());
+        setSpannable(textComposer.getSpanned());
     }
-
 }

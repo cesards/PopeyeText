@@ -1,12 +1,12 @@
 package com.cesards.android.popeyetext;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.SparseArray;
 import android.widget.TextView;
-import com.cesards.android.popeyetext.exception.TextComposerException;
 import com.cesards.android.popeyetext.span.Span;
 import java.util.ArrayList;
 
@@ -15,34 +15,30 @@ import java.util.ArrayList;
  */
 public class TextComposer {
 
-    private Spannable spannable;
+    private Spanned spanned;
 
-    public TextComposer(Spannable spannable) {
-        this.spannable = spannable;
+    public TextComposer(Spanned spanned) {
+        this.spanned = spanned;
     }
 
-    public Spannable getSpannable() {
-        return spannable;
+    public Spanned getSpanned() {
+        return spanned;
     }
 
     public static class Builder {
 
-        private TextView[] textViews;
+        private TextView textView;
         private Context context;
         private ArrayList<String> texts = new ArrayList<>();
         private ArrayList<String> patterns = new ArrayList<>();
         private SparseArray<String> ids = new SparseArray<>();
         private ArrayList<SpanBundle> spanBundles = new ArrayList<>();
 
-        public Builder(TextView... textViews) {
-            this.textViews = textViews;
-            if (textViews.length == 0) {
-                throw new TextComposerException();
-            }
-            this.context = textViews[0].getContext();
+        public Builder(@NonNull TextView textView) {
+            this.context = textView.getContext();
         }
 
-        public Builder(Context context) {
+        public Builder(@NonNull Context context) {
             this.context = context;
         }
 
@@ -110,16 +106,15 @@ public class TextComposer {
             for (int i = spanBundles.size() - 1; i >= 0; i--) {
                 final SpanBundle spanBundle = spanBundles.get(i);
 
-                final String s = ids.get(spanBundle.getTextId());
-                final int i1 = stringBuilder.indexOf(s);
-
-                //                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + spannedText
-                // .length(), Span.DEFAULT_RENDER_APPLY_MODE);
-                spannableString.setSpan(spanBundle.getSpan().getSpanType(), i1, i1 + s.length(),
-                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                final String text = ids.get(spanBundle.getTextId());
+                final int textIndex = stringBuilder.indexOf(text);
+                if (textIndex >= 0) {
+                    spannableString.setSpan(spanBundle.getSpan().getSpanType(), textIndex, textIndex + text.length(),
+                            Span.DEFAULT_RENDER_APPLY_MODE);
+                }
             }
 
-            for (TextView textView : textViews) {
+            if (textView != null) {
                 textView.setText(spannableString, TextView.BufferType.SPANNABLE);
             }
 
